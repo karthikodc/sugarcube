@@ -17,6 +17,14 @@
 var count = 0;
 var jive = require("jive-sdk");
 
+// Setup Sugar7 connection
+var sugar = require("../../../sugar.js");
+var conf = jive.service.options;
+//Assumes Sugar7 is installed on port 80 of same machine running Dealroom server
+var baseurl = conf.clientUrl + "/sugarcrm/rest/v10";
+sugar.init(baseurl);
+
+
 function processTileInstance(instance) {
     jive.logger.debug('running pusher for ', instance.name, 'instance', instance.id);
 
@@ -24,7 +32,7 @@ function processTileInstance(instance) {
 
     var dataToPush = {
         data: {
-            "title": "Simple Counter",
+            "title": "Quotes",
             "contents": [
                 {
                     "text": "Current count: " + count,
@@ -60,5 +68,5 @@ exports.task = new jive.tasks.build(
     },
 
     // interval (optional)
-    5000
+    10000
 );
