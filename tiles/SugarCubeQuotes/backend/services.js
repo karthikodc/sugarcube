@@ -55,18 +55,19 @@ function processTileInstance(instance) {
     jive.tiles.pushData(instance, dataToPush);
 }
 
-exports.task = new jive.tasks.build(
-    // runnable
-    function() {
-        jive.tiles.findByDefinitionName( 'SugarCubeQuotes' ).then( function(instances) {
-            if ( instances ) {
-                instances.forEach( function( instance ) {
-                    processTileInstance(instance);
-                });
-            }
-        });
-    },
+//TODO Hide temporarily
+// exports.task = new jive.tasks.build(
+//     // runnable
+//     function() {
+//         jive.tiles.findByDefinitionName( 'SugarCubeQuotes' ).then( function(instances) {
+//             if ( instances ) {
+//                 instances.forEach( function( instance ) {
+//                     processTileInstance(instance);
+//                 });
+//             }
+//         });
+//     },
 
-    // interval (optional)
-    10000
-);
+//     // interval (optional)
+//     10000
+// );

@@ -1,15 +1,25 @@
 
-//**  There is a bug in Restler right now, DO NOT USE Node version > 0.10.x! **/
-var rest = require("restler");
+/**
+ * (Rough beginnings of a) Sugar REST API node.js module
+ *
+ */
+var http = require("http");
+var url = require("url");
 var baseUrl = "";
+var tokenStore = {};
 
 exports.init = function(url){
     console.log("init called");
     baseUrl = url;
 };
 
-exports.login = function(username, password, callback, context){
-    console.log("login called");
+exports.getAccessToken = function(username, password, callback, context){
+    //Use cached credentials if we can
+    if(tokenStore[username]){
+        callback(tokenStore[username].access_token);
+        return;
+    }
+    console.log("getAccessToken called");
     console.log(baseUrl);
     var jsonData = {
         "grant_type" : "password",
@@ -18,24 +28,55 @@ exports.login = function(username, password, callback, context){
         "client_id" : "sugar",
         "client_secret" : ""
     };
-    rest.postJson(baseUrl + '/oauth2/token', jsonData).on('complete', function(data, response) {
-        console.log("login complete");
-        console.log(data);
-        var token = data.access_token;
-        callback(token);
+    var options = url.parse(baseUrl + '/oauth2/token');
+    options.headers = {
+        'Accept' : 'application/json',
+        'Content-Type' :'application/json'    
+    };
+    options.method = 'POST';
+    var req = http.request(options, function(response){
+        if(response.statusCode != 200){
+            console.error("Login failed: " + response.statusCode);
+        }
+        response.setEncoding('utf8');
+        response.on('data', function(chunk){
+            var data = JSON.parse(chunk.toString());
+            tokenStore[username] = data;
+            //reset when access token expires
+            setTimeout(function(){
+                delete tokenStore[username];
+            }, data.expires_in * 1000);  
+            callback(tokenStore[username].access_token);
+        });
+        
+    }).on('error', function(e){
+        console.error("Login error: " + e.message);
     });
+    req.write(JSON.stringify(jsonData))
+    req.end();
 };
 
 exports.get = function(relativeUrl, token, callback){
-    console.log("get called");
-    rest.get(baseUrl + relativeUrl, { 
-        headers:  { 
-            "Content-Type" : "application/json",
-            "OAuth-Token": token 
+    console.log("get called for " + relativeUrl);
+    var options = url.parse(baseUrl + relativeUrl);
+    var buffer = "";
+    options.headers = { 
+        "Content-Type" : "application/json",
+        "OAuth-Token": token 
+    };
+    http.get(options, function(response) {
+        if(response.statusCode != 200){
+            console.error("Login failed: " + response.statusCode);
         }
-    }).on('success', function(data, response) {
-        callback(data, response);
+        response.setEncoding('utf8');
+        response.on('data', function(chunk){
+            buffer += chunk.toString();
+        }); 
+        response.on('end', function(){
+            var data = JSON.parse(buffer);
+            callback(data, response);
+        });
     }).on('error', function(e) {
-        console.log("Got error: " + e.message);
+        console.error("Got error: " + e.message);
     });
 };
