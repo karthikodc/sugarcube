@@ -28,46 +28,63 @@ sugar.init(baseurl);
 function processTileInstance(instance) {
     jive.logger.debug('running pusher for ', instance.name, 'instance', instance.id);
 
-    count++;
-
     var dataToPush = {
         data: {
             "title": "Quotes",
-            "contents": [
-                {
-                    "text": "Current count: " + count,
-                    "icon": "http://farm4.staticflickr.com/3136/5870956230_2d272d31fd_z.jpg",
-                    "linkDescription": "Current counter."
-                }
-            ],
+            "contents": null,
             "config": {
                 "listStyle": "contentList"
             },
             "action": {
-                "text": "Add a Todo",
+                "text": "Create a Quote",
                 "context": {
                     "mode": "add"
                 }
             }
         }
     };
+    //TODO externalize credentials
+    sugar.getAccessToken("jim", "jim", function(token){
+        sugar.get("/Quotes", token, function(data, response){
+            if (typeof data.records  === 'undefined') return;
+            var records = data.records;
+            var items = [];
+            if (records) {
+                records.forEach(function(record){
+                    items.push(
+                    {
+                        text: record.name,
+                        icon: "http://farm4.staticflickr.com/3136/5870956230_2d272d31fd_z.jpg",
+                        linkDescription: record.description,
+                        action: {
+                            context: {
+                                id: record.id, 
+                                module: record._module
+                            }
+                        }                        
+                    });
+                });
+                dataToPush.data.contents = items;
+            }
+            jive.tiles.pushData(instance, dataToPush);
+        });
+    });
 
-    jive.tiles.pushData(instance, dataToPush);
+    
 }
 
-//TODO Hide temporarily
-// exports.task = new jive.tasks.build(
-//     // runnable
-//     function() {
-//         jive.tiles.findByDefinitionName( 'SugarCubeQuotes' ).then( function(instances) {
-//             if ( instances ) {
-//                 instances.forEach( function( instance ) {
-//                     processTileInstance(instance);
-//                 });
-//             }
-//         });
-//     },
+exports.task = new jive.tasks.build(
+    // runnable
+    function() {
+        jive.tiles.findByDefinitionName( 'SugarCubeQuotes' ).then( function(instances) {
+            if ( instances ) {
+                instances.forEach( function( instance ) {
+                    processTileInstance(instance);
+                });
+            }
+        });
+    },
 
-//     // interval (optional)
-//     10000
-// );
+    // interval (optional)
+    15000
+);

@@ -6,9 +6,8 @@ var conf = jive.service.options;
 
 exports.route = function(req, res){
     sugar.getAccessToken("jim", "jim", function(token){
-        sugar.get("/Quotes", token, function(data, response){
+        sugar.get("/Quotes", token, function(data){
             res.send(JSON.stringify(data));
         });
     });
 };
-

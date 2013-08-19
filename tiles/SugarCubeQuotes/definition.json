@@ -1,15 +1,13 @@
 {
     "sampleData" : {
-        "title" : "SugarCubeQuotes list",
-        "contents" : [ {
-            "text" : "Initial text to be replaced"
-        } ],
+        "title" : "Sugar Quotes",
+        "contents" : [],
         "config" : {
                "listStyle" : "contentList"
         },
         "action" : {
-            "text" : "Action Link",
-            "context" : { "test" : "data" }
+            "text" : "Create a Quote",
+            "context" : { "id" : "" }
         }
     },
     "displayName" : "SugarCubeQuotes",
