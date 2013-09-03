@@ -1,18 +1,18 @@
 {
     "sampleData" : {
-        "title" : "Sugar Quotes",
+        "title" : "Sugar Opportunities",
         "contents" : [],
         "config" : {
                "listStyle" : "contentList"
         },
         "action" : {
-            "text" : "Create a Quote",
+            "text" : "Create an Opportunity",
             "context" : { "id" : "" }
         }
     },
-    "displayName" : "SugarCubeQuotes",
-    "name" : "SugarCubeQuotes",
-    "description" : "SugarCubeQuotes",
+    "displayName" : "SugarCubeOpportunities",
+    "name" : "SugarCubeOpportunities",
+    "description" : "SugarCubeOpportunities",
     "style" : "LIST",
     "icons" : {
         "16" : "https://si0.twimg.com/profile_images/2027721183/Sugar_cube_RGB_180x180_bigger.png",

@@ -29,15 +29,17 @@ function processTileInstance(instance) {
 
     var dataToPush = {
         data: {
-            "title": "Quotes",
+            "title": "Opportunities",
             "contents": null,
             "config": {
                 "listStyle": "contentList"
             },
             "action": {
-                "url" : conf.clientUrl + "/sugarcrm/#bwc/index.php?module=Quotes&action=EditView&return_module=Quotes&return_action=DetailView",
-                "text": "Create a Quote"
+                "url": conf.clientUrl + "/sugarcrm/#Opportunities/create",
+                "text": "Create an Opportunity"
+                // ,
                 // "context": {
+                //     "url": conf.clientUrl + "sugarcrm/#Opportunities/create",
                 //     "mode": "add"
                 // }
             }
@@ -45,7 +47,7 @@ function processTileInstance(instance) {
     };
     //TODO externalize credentials
     sugar.getAccessToken("jim", "jim", function(token){
-        sugar.get("/Quotes", token, function(data, response){
+        sugar.get("/Opportunities", token, function(data, response){
             if (typeof data.records  === 'undefined') return;
             var records = data.records;
             var items = [];
@@ -76,18 +78,18 @@ function processTileInstance(instance) {
     
 }
 
-// exports.task = new jive.tasks.build(
-//     // runnable
-//     function() {
-//         jive.tiles.findByDefinitionName( 'SugarCubeQuotes' ).then( function(instances) {
-//             if ( instances ) {
-//                 instances.forEach( function( instance ) {
-//                     processTileInstance(instance);
-//                 });
-//             }
-//         });
-//     },
+exports.task = new jive.tasks.build(
+    // runnable
+    function() {
+        jive.tiles.findByDefinitionName( 'SugarCubeOpportunities' ).then( function(instances) {
+            if ( instances ) {
+                instances.forEach( function( instance ) {
+                    processTileInstance(instance);
+                });
+            }
+        });
+    },
 
-//     // interval (optional)
-//     15000
-// );
+    // interval (optional)
+    20000
+);
